@@ -21,6 +21,11 @@ class RbacController extends Controller
         $updatePost->description = 'Update post';
         $auth->add($updatePost);
 
+        // добавляем роль "guest" и даём роли разрешение "onlyRead"
+        $author = $auth->createRole('guest');
+        $auth->add($author);
+        $auth->addChild($author, $createPost);
+
         // добавляем роль "author" и даём роли разрешение "createPost"
         $author = $auth->createRole('author');
         $auth->add($author);
