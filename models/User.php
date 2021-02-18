@@ -29,6 +29,9 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
 
+    const ROLE_ADMIN = 1;
+    const ROLE_USER = 2;
+
     /**
      * @inheritdoc
      */
@@ -176,5 +179,11 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    public static function getRole($id){
+        return User::find()
+            ->where(['id' => $id])
+            ->column('role');
     }
 }

@@ -20,7 +20,7 @@ class m210216_135019_create_message_table extends Migration
 
         $this->createTable('{{%message}}', [
             'id' => $this->primaryKey(),
-            'user_id' => $this->primaryKey(),
+            'user_id' => $this->integer(),
             'text' => $this->string(256),
             'isIncorrect' => $this->tinyInteger(),
             'create' => $this->timestamp(),
