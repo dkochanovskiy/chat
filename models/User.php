@@ -15,12 +15,10 @@ use yii\web\IdentityInterface;
  * @property integer $id
  * @property string $username
  * @property string $password_hash
- * @property string $password_reset_token
  * @property string $email
  * @property string $auth_key
+ * @property string $role
  * @property integer $status
- * @property integer $created_at
- * @property integer $updated_at
  * @property string $password write-only password
  */
 
@@ -31,6 +29,9 @@ class User extends ActiveRecord implements IdentityInterface
 
     const ROLE_ADMIN = 1;
     const ROLE_USER = 2;
+    /**
+     * @var mixed|null
+     */
 
     /**
      * @inheritdoc
@@ -57,7 +58,9 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
+            ['role', 'default', 'value' => self::ROLE_USER],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            ['role', 'in', 'range' => [self::ROLE_USER, self::ROLE_ADMIN]],
         ];
     }
 
@@ -134,56 +137,11 @@ class User extends ActiveRecord implements IdentityInterface
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
     }
 
-    /**
-     * Generates "remember me" authentication key
-     * @throws Exception
-     */
     public function generateAuthKey()
     {
-        $this->auth_key = Yii::$app->security->generateRandomString();
-    }
-
-    public static function findByPasswordResetToken($token)
-    {
-
-        if (!static::isPasswordResetTokenValid($token)) {
-            return null;
-        }
-
-        return static::findOne([
-            'password_reset_token' => $token,
-            'status' => self::STATUS_ACTIVE,
-        ]);
-    }
-
-    public static function isPasswordResetTokenValid($token)
-    {
-
-        if (empty($token)) {
-            return false;
-        }
-
-        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
-        $expire = Yii::$app->params['user.passwordResetTokenExpire'];
-        return $timestamp + $expire >= time();
-    }
-
-    public function generatePasswordResetToken()
-    {
         try {
-            $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
+            $this->auth_key = Yii::$app->security->generateRandomString();
         } catch (Exception $e) {
         }
-    }
-
-    public function removePasswordResetToken()
-    {
-        $this->password_reset_token = null;
-    }
-
-    public static function getRole($id){
-        return User::find()
-            ->where(['id' => $id])
-            ->column('role');
     }
 }

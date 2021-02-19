@@ -21,10 +21,10 @@ class m210216_135019_create_message_table extends Migration
         $this->createTable('{{%message}}', [
             'id' => $this->primaryKey(),
             'user_id' => $this->integer(),
-            'text' => $this->string(256),
+            'text' => $this->string(),
             'isIncorrect' => $this->tinyInteger(),
-            'create' => $this->timestamp(),
-            'update' => $this->timestamp(),
+            'create' => $this->string(),
+            'update' => $this->string(),
         ], $tableOptions);
 
         $this->addForeignKey(

@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\User;
+use app\models\Message;
 
 /**
- * UserSearch represents the model behind the search form of `app\models\User`.
+ * MessageSearch represents the model behind the search form of `app\models\Message`.
  */
-class UserSearch extends User
+class IncorrectMessageSearch extends Message
 {
     /**
      * {@inheritdoc}
@@ -17,8 +17,8 @@ class UserSearch extends User
     public function rules()
     {
         return [
-            [['id', 'status'], 'integer'],
-            [['username', 'auth_key', 'password_hash', 'email'], 'safe'],
+            [['id', 'user_id', 'isIncorrect'], 'integer'],
+            [['text', 'create', 'update'], 'safe'],
         ];
     }
 
@@ -40,7 +40,7 @@ class UserSearch extends User
      */
     public function search($params)
     {
-        $query = User::find();
+        $query = Message::find();
 
         // add conditions that should always apply here
 
@@ -56,16 +56,18 @@ class UserSearch extends User
             return $dataProvider;
         }
 
+        $query->where(['isIncorrect' => 1]);
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'status' => $this->status,
+            'user_id' => $this->user_id,
+            'isIncorrect' => $this->isIncorrect,
+            'create' => $this->create,
+            'update' => $this->update,
         ]);
 
-        $query->andFilterWhere(['like', 'username', $this->username])
-            ->andFilterWhere(['like', 'auth_key', $this->auth_key])
-            ->andFilterWhere(['like', 'password_hash', $this->password_hash])
-            ->andFilterWhere(['like', 'email', $this->email]);
+        $query->andFilterWhere(['like', 'text', $this->text]);
 
         return $dataProvider;
     }

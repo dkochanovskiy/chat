@@ -9,6 +9,7 @@ class m210217_112122_create_user_table extends Migration
 {
     /**
      * {@inheritdoc}
+     * @throws \yii\base\Exception
      */
     public function safeUp()
     {
@@ -23,13 +24,22 @@ class m210217_112122_create_user_table extends Migration
             'username' => $this->string()->notNull()->unique(),
             'auth_key' => $this->string(32)->notNull(),
             'password_hash' => $this->string()->notNull(),
-            'password_reset_token' => $this->string()->unique(),
-            'email' => $this->string()->notNull()->unique(),
-            'role' => $this->tinyInteger()->notNull()->defaultValue(2),
-            'status' => $this->smallInteger()->notNull()->defaultValue(10),
-            'created_at' => $this->integer()->notNull(),
-            'updated_at' => $this->integer()->notNull(),
+            'email' => $this->string()->unique(),
+            'role' => $this->tinyInteger(),
+            'status' => $this->smallInteger(),
+            'created_at' => $this->integer(),
+            'updated_at' => $this->integer(),
         ], $tableOptions);
+
+        Yii::$app->db->createCommand()->insert('user', [
+            'username' => 'admin',
+            'auth_key' => Yii::$app->security->generateRandomString(),
+            'password_hash' => Yii::$app->security->generatePasswordHash('123456'),
+            'email' => 'admin@mail.com',
+            'role' => 1,
+            'status' => 10,
+            'created_at' =>time()
+        ])->execute();
     }
 
     /**

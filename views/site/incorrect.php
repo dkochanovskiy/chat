@@ -1,28 +1,25 @@
 <?php
 
-use app\models\User;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\UserSearch */
+/* @var $searchModel app\models\MessageSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Users';
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Incorrect messages';
 ?>
-<div class="user-index">
+<div class="message-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?php Pjax::begin(); ?>
-
-    <?= GridView::widget([
+    <?php
+    Pjax::begin();
+    echo GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            'username',
-            'role',
+            'text',
+            'isIncorrect',
+            'create',
             [
                 'class' => 'yii\grid\ActionColumn',
                 'header' => 'Действия',
@@ -30,8 +27,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'template' => '{update}',
             ],
         ],
-    ]); ?>
-
-    <?php Pjax::end(); ?>
+    ]);
+    Pjax::end();
+    ?>
 
 </div>

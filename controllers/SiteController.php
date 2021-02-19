@@ -2,19 +2,16 @@
 
 namespace app\controllers;
 
-use app\models\User;
+use app\models\IncorrectMessageSearch;
+use app\models\Message;
+use app\models\MessageSearch;
 use Yii;
-use yii\base\InvalidParamException;
 use yii\filters\AccessControl;
-use yii\web\BadRequestHttpException;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 use yii\web\Response;
-use yii\filters\VerbFilter;
 use app\models\LoginForm;
-use app\models\ContactForm;
 use app\models\SignupForm;
-use app\models\PasswordResetRequestForm;
-use app\models\ResetPasswordForm;
 
 class SiteController extends Controller
 {
@@ -66,7 +63,13 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $searchModel = new MessageSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
     /**
@@ -103,34 +106,6 @@ class SiteController extends Controller
         return $this->goHome();
     }
 
-    /**
-     * Displays contact page.
-     *
-     * @return Response|string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
-    }
-
     public function actionSignup()
     {
         $model = new SignupForm();
@@ -149,50 +124,73 @@ class SiteController extends Controller
     }
 
     /**
-     * Requests password reset.
-     *
+     * Creates a new Message model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionRequestPasswordReset()
+    public function actionCreate()
     {
-        $model = new PasswordResetRequestForm();
+        $model = new Message();
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail()) {
-                Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
-                return $this->goHome();
-            } else {
-                Yii::$app->session->setFlash('error', 'Sorry, we are unable to reset password for email provided.');
-            }
+        $model->user_id = Yii::$app->user->identity->id;
+        $model->create = date("Y-m-d H:i:s");
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['index']);
         }
 
-        return $this->render('requestPasswordResetToken', [
+        return $this->render('create', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Resets password.
-     *
-     * @param string $token
+     * Updates an existing Message model.
+     * If update is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
      * @return mixed
-     * @throws BadRequestHttpException
      */
-    public function actionResetPassword($token)
+    public function actionUpdate($id)
     {
-        try {
-            $model = new ResetPasswordForm($token);
-        } catch (InvalidParamException $e) {
-            throw new BadRequestHttpException($e->getMessage());
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['index']);
         }
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
-            Yii::$app->session->setFlash('success', 'New password was saved.');
-            return $this->goHome();
-        }
-
-        return $this->render('resetPassword', [
-            'model' => $model
+        return $this->render('update', [
+            'model' => $model,
         ]);
-      }
+    }
+
+    /**
+     * Lists incorrect messages.
+     * @return mixed
+     */
+    public function actionIncorrect()
+    {
+        $searchModel = new IncorrectMessageSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('incorrect', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Finds the Message model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Message the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($id)
+    {
+        if (($model = Message::findOne($id)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
+    }
 }
