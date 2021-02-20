@@ -9,12 +9,17 @@ use yii\widgets\ActiveForm;
 ?>
 
 <div class="message-form">
-
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'text')->textInput(['maxlength' => true]) ?>
+    <?php
+        if($this->context->route == 'site/create'){
+            echo $form->field($model, 'text')->textInput(['maxlength' => true]);
+        }
 
-    <?= $form->field($model, 'isIncorrect')->textInput() ?>
+        if($this->context->route == 'site/update'){
+            echo $form->field($model, 'isIncorrect')->textInput();
+        }
+    ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

@@ -5,8 +5,10 @@ namespace app\controllers;
 use app\models\IncorrectMessageSearch;
 use app\models\Message;
 use app\models\MessageSearch;
+use app\models\MessageSearchUser;
 use Yii;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
@@ -23,12 +25,17 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['login', 'logout', 'signup'],
+                'only' => ['login', 'logout', 'signup', 'update', 'incorrect'],
                 'rules' => [
                     [
                         'allow' => true,
                         'actions' => ['login', 'signup'],
                         'roles' => ['?'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['update', 'incorrect'],
+                        'roles' => ['adminPerm'],
                     ],
                     [
                         'allow' => true,
@@ -66,9 +73,15 @@ class SiteController extends Controller
         $searchModel = new MessageSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $searchModelUser = new MessageSearchUser();
+        $dataProviderUser = $searchModelUser->search(Yii::$app->request->queryParams);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+
+            'searchModelUser' => $searchModelUser,
+            'dataProviderUser' => $dataProviderUser,
         ]);
     }
 
@@ -133,6 +146,7 @@ class SiteController extends Controller
         $model = new Message();
 
         $model->user_id = Yii::$app->user->identity->id;
+        $model->isIncorrect = 0;
         $model->create = date("Y-m-d H:i:s");
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {

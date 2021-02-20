@@ -9,7 +9,6 @@ use yii\widgets\Pjax;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Users';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="user-index">
 
@@ -19,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
+        'summary' => false,
         'columns' => [
             'username',
             'role',

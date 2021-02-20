@@ -16,9 +16,26 @@ $this->title = 'Incorrect messages';
     echo GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'summary' => false,
+        'tableOptions' => [
+            'class' => 'table table-bordered'
+        ],
+        'rowOptions'=>function ($data) {
+            if($data->user->role == 1){
+                return [
+                    'class' => 'warning'
+                ];
+            }
+        },
         'columns' => [
+            [
+                'attribute'=>'user_id',
+                'label'=>'Author',
+                'content'=>function($data){
+                    return $data->user->username;
+                },
+            ],
             'text',
-            'isIncorrect',
             'create',
             [
                 'class' => 'yii\grid\ActionColumn',

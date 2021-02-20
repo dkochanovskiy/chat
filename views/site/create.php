@@ -6,7 +6,6 @@ use yii\helpers\Html;
 /* @var $model app\models\Message */
 
 $this->title = 'Create Message';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="message-create">
 

@@ -1,9 +1,11 @@
 <?php
 
+use app\models\User;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 /* @var $this yii\web\View */
+/* @var $model app\models\Message */
 /* @var $searchModel app\models\MessageSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
@@ -12,18 +14,37 @@ $this->title = 'Messages';
 <div class="message-index">
 
     <?php
+
     if (!Yii::$app->user->isGuest) {
         echo '<p>';
         echo Html::a('Create Message', ['site/create'], ['class' => 'btn btn-success']);
         echo '</p>';
-
+    }
+    if(Yii::$app->user->can('adminPerm')){
         Pjax::begin();
+
         echo GridView::widget([
             'dataProvider' => $dataProvider,
-            'filterModel' => $searchModel,
+            'summary' => false,
+            'tableOptions' => [
+                'class' => 'table table-bordered'
+            ],
+            'rowOptions'=>function ($data) {
+                if($data->user->role == 1){
+                    return [
+                        'class' => 'warning'
+                    ];
+                }
+            },
             'columns' => [
+                [
+                    'attribute'=>'user_id',
+                    'label'=>'Author',
+                    'content'=>function($data){
+                        return $data->user->username;
+                    },
+                ],
                 'text',
-                'isIncorrect',
                 'create',
                 [
                     'class' => 'yii\grid\ActionColumn',
@@ -36,10 +57,26 @@ $this->title = 'Messages';
         Pjax::end();
     } else {
         echo GridView::widget([
-            'dataProvider' => $dataProvider,
-            'filterModel' => $searchModel,
+            'dataProvider' => $dataProviderUser,
+            'summary' => false,
+            'tableOptions' => [
+                'class' => 'table table-bordered'
+            ],
+            'rowOptions'=>function ($data) {
+                if($data->user->role == 1){
+                    return [
+                        'class' => 'warning'
+                    ];
+                }
+            },
             'columns' => [
-                'user_id',
+                [
+                    'attribute'=>'user_id',
+                    'label'=>'Author',
+                    'content'=>function($data){
+                        return $data->user->username;
+                    },
+                ],
                 'text',
                 'create',
             ],

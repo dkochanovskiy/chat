@@ -9,7 +9,7 @@ use app\models\Message;
 /**
  * MessageSearch represents the model behind the search form of `app\models\Message`.
  */
-class MessageSearch extends Message
+class MessageSearchUser extends Message
 {
     /**
      * {@inheritdoc}

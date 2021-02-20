@@ -43,13 +43,12 @@ AppAsset::register($this);
         $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
         $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
     } else {
-        if (\Yii::$app->user->can('readUser')) {
+        if (Yii::$app->user->can('adminPerm')) {
             $menuItems[] = ['label' => 'Users', 'url' => ['/user']];
-        }
-        if (\Yii::$app->user->can('readIncorrect')) {
             $menuItems[] = ['label' => 'Incorrect messages', 'url' => ['/site/incorrect']];
+            $menuItems[] = ['label' => 'Messages', 'url' => ['/site']];
         }
-        $menuItems[] = ['label' => 'Messages', 'url' => ['/site']];
+
 
         $menuItems[] = '<li>'
             . Html::beginForm(['/site/logout'], 'post')
