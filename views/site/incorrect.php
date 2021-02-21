@@ -11,11 +11,12 @@ $this->title = 'Incorrect messages';
 ?>
 <div class="message-index">
 
+    <h1><?= Html::encode($this->title) ?></h1>
+
     <?php
     Pjax::begin();
     echo GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
         'summary' => false,
         'tableOptions' => [
             'class' => 'table table-bordered'
@@ -36,10 +37,13 @@ $this->title = 'Incorrect messages';
                 },
             ],
             'text',
-            'create',
+            [
+                'attribute'=>'create',
+                'headerOptions' => ['width' => '100'],
+            ],
             [
                 'class' => 'yii\grid\ActionColumn',
-                'header' => 'Действия',
+                'header' => 'Mark is correct',
                 'headerOptions' => ['width' => '80'],
                 'template' => '{update}',
             ],

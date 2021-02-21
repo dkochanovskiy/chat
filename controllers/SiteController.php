@@ -8,7 +8,6 @@ use app\models\MessageSearch;
 use app\models\MessageSearchUser;
 use Yii;
 use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
@@ -25,17 +24,12 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['login', 'logout', 'signup', 'update', 'incorrect'],
+                'only' => ['login', 'logout', 'signup'],
                 'rules' => [
                     [
                         'allow' => true,
                         'actions' => ['login', 'signup'],
                         'roles' => ['?'],
-                    ],
-                    [
-                        'allow' => true,
-                        'actions' => ['update', 'incorrect'],
-                        'roles' => ['adminPerm'],
                     ],
                     [
                         'allow' => true,
@@ -166,15 +160,17 @@ class SiteController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        if (Yii::$app->user->identity->role == 1) {
+            $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
-        }
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                return $this->redirect(['index']);
+            }
 
-        return $this->render('update', [
-            'model' => $model,
-        ]);
+            return $this->render('update', [
+                'model' => $model,
+            ]);
+        } else return $this->render('forbidden');
     }
 
     /**
@@ -183,13 +179,15 @@ class SiteController extends Controller
      */
     public function actionIncorrect()
     {
-        $searchModel = new IncorrectMessageSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        if (Yii::$app->user->identity->role == 1) {
+            $searchModel = new IncorrectMessageSearch();
+            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('incorrect', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+            return $this->render('incorrect', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ]);
+        } else return $this->render('forbidden');
     }
 
     /**

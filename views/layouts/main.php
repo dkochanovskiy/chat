@@ -43,7 +43,7 @@ AppAsset::register($this);
         $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
         $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
     } else {
-        if (Yii::$app->user->can('adminPerm')) {
+        if (Yii::$app->user->identity->role == 1) {
             $menuItems[] = ['label' => 'Users', 'url' => ['/user']];
             $menuItems[] = ['label' => 'Incorrect messages', 'url' => ['/site/incorrect']];
             $menuItems[] = ['label' => 'Messages', 'url' => ['/site']];

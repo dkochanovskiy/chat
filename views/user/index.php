@@ -21,10 +21,20 @@ $this->title = 'Users';
         'summary' => false,
         'columns' => [
             'username',
-            'role',
+            [
+                'attribute' => 'role',
+                'value' => function($data){
+                    if($data->role == 1){
+                        return 'admin';
+                    }
+                    if($data->role == 2){
+                        return 'user';
+                    }
+                },
+            ],
             [
                 'class' => 'yii\grid\ActionColumn',
-                'header' => 'Действия',
+                'header' => 'Change role',
                 'headerOptions' => ['width' => '80'],
                 'template' => '{update}',
             ],

@@ -13,16 +13,34 @@ use yii\widgets\ActiveForm;
 
     <?php
         if($this->context->route == 'site/create'){
-            echo $form->field($model, 'text')->textInput(['maxlength' => true]);
+            echo $form->field($model, 'text')->textarea(['rows' => 10]);
         }
 
         if($this->context->route == 'site/update'){
-            echo $form->field($model, 'isIncorrect')->textInput();
+            echo '<div class="col-md-12">';
+            echo '<div>Correct - 0</div>';
+            echo '<div>Incorrect - 1</div><br>';
+            echo '</div>';
+            echo '<div class="form-group">';
+            echo '<div class="row">';
+            echo '<div class="col-md-2">';
+
+            echo $form->field($model, 'isIncorrect')->dropDownList([
+                '0' => 'Correct',
+                '1' => 'Incorrect'
+            ])->label('Mark');
+
+            echo '</div>';
+            echo '</div>';
+            echo '</div>';
         }
     ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <?php
+            echo Html::a('Cancel', ['/site'], ['class' => 'btn btn-danger']);
+        ?>
     </div>
 
     <?php ActiveForm::end(); ?>

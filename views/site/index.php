@@ -1,6 +1,5 @@
 <?php
 
-use app\models\User;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
@@ -12,7 +11,7 @@ use yii\widgets\Pjax;
 $this->title = 'Messages';
 ?>
 <div class="message-index">
-
+    <h1><?= Html::encode($this->title) ?></h1>
     <?php
 
     if (!Yii::$app->user->isGuest) {
@@ -20,7 +19,7 @@ $this->title = 'Messages';
         echo Html::a('Create Message', ['site/create'], ['class' => 'btn btn-success']);
         echo '</p>';
     }
-    if(Yii::$app->user->can('adminPerm')){
+    if(Yii::$app->user->identity->role == 1){
         Pjax::begin();
 
         echo GridView::widget([
@@ -45,11 +44,13 @@ $this->title = 'Messages';
                     },
                 ],
                 'text',
-                'create',
+                [
+                    'attribute'=>'create',
+                    'headerOptions' => ['width' => '100'],
+                ],
                 [
                     'class' => 'yii\grid\ActionColumn',
-                    'header' => 'Действия',
-                    'headerOptions' => ['width' => '80'],
+                    'header' => 'Mark is incorrect',
                     'template' => '{update}',
                 ],
             ],
