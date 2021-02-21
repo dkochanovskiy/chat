@@ -12,3 +12,8 @@ Data for access to the admin panel:
 Login: admin
 Password: 123456
 ~~~
+
+~~~
+Login: user
+Password: 123456
+~~~
